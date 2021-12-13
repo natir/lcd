@@ -24,17 +24,22 @@ fn main() -> error::Result<()> {
 
     if let Some(threads) = params.threads {
         log::info!("Set number of threads to {}", threads);
+        set_nb_threads(threads);
     }
 
     let count = if let Some(buffer_length) = params.buffer_length {
-        io::count_kmer(params.kmer_size, params.inputs, buffer_length)?
+        io::count_kmer(params.kmer_size, &params.inputs, buffer_length)?
     } else {
-        io::count_kmer(params.kmer_size, params.inputs, 8192)?
+        io::count_kmer(params.kmer_size, &params.inputs, 8192)?
     };
 
     match params.subcmd {
-        cli::SubCommand::Detect(params) => detect::detect(params),
-        cli::SubCommand::Filter(params) => filter::filter(params),
-        cli::SubCommand::Clean(params) => clean::clean(params),
+        cli::SubCommand::Detect(ref subparams) => detect::detect(count, &params, subparams),
+        _ => {
+            log::info!("Not supported sub command");
+            Ok(())
+        }
+        // cli::SubCommand::Filter(subparams) => filter::filter(params),
+        // cli::SubCommand::Clean(subparams) => clean::clean(params),
     }
 }

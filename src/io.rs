@@ -10,7 +10,7 @@ use crate::*;
 
 pub fn count_kmer(
     kmer_size: u8,
-    inputs: Vec<std::path::PathBuf>,
+    inputs: &[std::path::PathBuf],
     buffer_length: usize,
 ) -> error::Result<pcon::counter::Counter> {
     log::info!("Start of kmer count");
@@ -21,15 +21,7 @@ pub fn count_kmer(
 
     for path in inputs {
         log::info!("Start of kmer count of the file {}", path.display());
-        let reader =
-            niffler::get_reader(Box::new(std::fs::File::open(&path).map_err(|error| {
-                Error::IO(IO::CantOpenFile {
-                    path: path.clone(),
-                    error,
-                })
-            })?))
-            .map_err(|error| Error::Transparent(Box::new(error)))?
-            .0;
+        let reader = get_reader(&path)?;
 
         counter.count_fasta(reader, buffer_length);
 
@@ -37,4 +29,17 @@ pub fn count_kmer(
     }
 
     Ok(counter)
+}
+
+pub fn get_reader(path: &std::path::Path) -> error::Result<Box<dyn std::io::Read>> {
+    Ok(
+        niffler::get_reader(Box::new(std::fs::File::open(path).map_err(|error| {
+            Error::IO(IO::CantOpenFile {
+                path: path.to_path_buf(),
+                error,
+            })
+        })?))
+        .map_err(|error| Error::Transparent(Box::new(error)))?
+        .0,
+    )
 }
