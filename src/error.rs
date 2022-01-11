@@ -25,6 +25,10 @@ pub enum Cli {
     /// Can't convert str in OutputFormat
     #[error("Can't convert \"{params}\" in OutputFormat allow value are 'text', 'json'")]
     OutputFormatCast { params: String },
+
+    /// Number of input and output must be equal
+    #[error("Number of input ({input}) and output ({output}) must be equal")]
+    DiffInputOutput { input: usize, output: usize },
 }
 
 #[derive(thiserror::Error, std::fmt::Debug)]

@@ -56,7 +56,7 @@ pub fn detect(
 ) -> error::Result<read2gap::Read2Gap> {
     let mut read2gap = read2gap::Read2Gap::default();
 
-    for input in inputs.iter() {
+    for input in inputs {
         let mut reader =
             noodles::fasta::Reader::new(std::io::BufReader::new(io::get_reader(input)?));
         let mut records_iterator = reader.records();

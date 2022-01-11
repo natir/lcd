@@ -35,7 +35,7 @@ fn main() -> error::Result<()> {
 
     match params.subcmd {
         cli::SubCommand::Detect(ref subparams) => detect::main(count, &params, subparams),
-        // cli::SubCommand::Filter(subparams) => filter::filter(params),
+        cli::SubCommand::Filter(ref subparams) => filter::main(count, &params, subparams),
         // cli::SubCommand::Clean(subparams) => clean::clean(params),
         _ => {
             log::error!("Not supported sub command");
