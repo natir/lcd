@@ -124,7 +124,27 @@ impl SubCommandDetect {
 
 #[derive(clap::Parser, std::fmt::Debug)]
 /// Filter read with low coverage region
-pub struct SubCommandFilter {}
+pub struct SubCommandFilter {
+    #[clap(short = 'o', long = "output")]
+    /// Output path (default: stdout)
+    pub outputs: Option<Vec<std::path::PathBuf>>,
+}
+
+impl SubCommandFilter {
+    /// Get outputs or default value
+    pub fn outputs(&self) -> error::Result<Vec<Box<dyn std::io::Write>>> {
+        if let Some(paths) = &self.outputs {
+            let outs: Result<Vec<_>, _> = paths
+                .iter()
+                .map(|path| io::get_writer(path.as_ref()))
+                .collect();
+
+            outs
+        } else {
+            Ok(vec![Box::new(std::io::stdout())])
+        }
+    }
+}
 
 #[derive(clap::Parser, std::fmt::Debug)]
 /// Remove low coverage region

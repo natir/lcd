@@ -9,6 +9,7 @@ use itertools::Itertools;
 use crate::error::*;
 use crate::*;
 
+/// Struct to associate a read id his gap
 #[derive(std::default::Default, std::fmt::Debug, serde::Serialize, serde::Deserialize)]
 pub struct Read2Gap(pub rustc_hash::FxHashMap<String, Vec<(usize, usize)>>);
 
