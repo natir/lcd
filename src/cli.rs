@@ -30,6 +30,10 @@ pub struct Command {
     /// If estimate coverage is equal or lower than this value are consider as low coverage region (default: 0)
     pub min_coverage: Option<u8>,
 
+    #[clap(short = 'l', long = "gap-length")]
+    /// Minimal length of coverage gap to be consider as an erroneous region (default: 20)
+    pub gap_length: Option<u8>,
+
     #[clap(short = 'b', long = "record_buffer")]
     /// Number of sequence record load in buffer (default: 8192)
     pub buffer_length: Option<usize>,

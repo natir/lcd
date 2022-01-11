@@ -7,11 +7,17 @@
 /* project use */
 
 /* mod declaration */
+// data struct
+pub mod read2gap;
+
+// subcommand
 pub mod clean;
-pub mod cli;
 pub mod detect;
-pub mod error;
 pub mod filter;
+
+// utils
+pub mod cli;
+pub mod error;
 pub mod io;
 
 /// Set the number of threads use by pcon

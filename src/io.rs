@@ -21,7 +21,7 @@ pub fn count_kmer(
 
     for path in inputs {
         log::info!("Start of kmer count of the file {}", path.display());
-        let reader = get_reader(&path)?;
+        let reader = get_reader(path)?;
 
         counter.count_fasta(reader, buffer_length);
 

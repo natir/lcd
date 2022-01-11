@@ -34,12 +34,12 @@ fn main() -> error::Result<()> {
     };
 
     match params.subcmd {
-        cli::SubCommand::Detect(ref subparams) => detect::detect(count, &params, subparams),
-        _ => {
-            log::info!("Not supported sub command");
-            Ok(())
-        }
+        cli::SubCommand::Detect(ref subparams) => detect::main(count, &params, subparams),
         // cli::SubCommand::Filter(subparams) => filter::filter(params),
         // cli::SubCommand::Clean(subparams) => clean::clean(params),
+        _ => {
+            log::error!("Not supported sub command");
+            Ok(())
+        }
     }
 }

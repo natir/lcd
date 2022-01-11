@@ -12,16 +12,17 @@ crate-type = ["rlib", "cdylib", "staticlib"]
 
 
 [dependencies]
-noodles        = { version = "0.15", features = ["fasta"]}
+noodles        = { version = "0.16", features = ["fasta"]}
 cocktail       = { git = "https://github.com/natir/cocktail.git" }
 pcon	       = { git = "https://github.com/natir/pcon.git" }
-ringbuffer     = "0.8"
+rustc-hash     = "1"
 
 # parallel
-rayon           = "1"
+rayon          = "1"
 
 # input output management
 niffler	       = { version = "2", features = ["bz2", "lzma", "gz"] }
+serde          = { version = "1", features = ["derive"] }
 
 # CLI management
 clap           = { version = "3.0.0-rc.4", features = ["derive"] }
