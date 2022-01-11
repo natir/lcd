@@ -31,11 +31,28 @@ pub struct Command {
     pub min_coverage: Option<u8>,
 
     #[clap(short = 'b', long = "record_buffer")]
-    /// Number of sequence record load in buffer, default 8192
+    /// Number of sequence record load in buffer (default: 8192)
     pub buffer_length: Option<usize>,
 
     #[clap(subcommand)]
     pub subcmd: SubCommand,
+}
+
+impl Command {
+    /// Get min_coverage or default value
+    pub fn min_coverage(&self) -> u8 {
+        self.min_coverage.unwrap_or(0)
+    }
+
+    /// Get gap_length or default value
+    pub fn gap_length(&self) -> u8 {
+        self.gap_length.unwrap_or(20)
+    }
+
+    /// Get buffer_length or default value
+    pub fn buffer_length(&self) -> usize {
+        self.buffer_length.unwrap_or(8192)
+    }
 }
 
 #[derive(clap::Parser, std::fmt::Debug)]

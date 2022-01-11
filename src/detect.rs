@@ -16,27 +16,17 @@ pub fn detect(
 ) -> error::Result<()> {
     log::debug!("Run detect with params: {:?} {:?}", main_params, sub_params);
 
-    let buffer_length = if let Some(buffer_length) = main_params.buffer_length {
-        io::count_kmer(
-            main_params.kmer_size,
-            &main_params.inputs,
-            main_params.buffer_length.unwrap_or(8192),
-        )?
-    } else {
-        io::count_kmer(main_params.kmer_size, &main_params.inputs, 8192)?
-    };
-
     for input in main_params.inputs.iter() {
         let mut reader =
             noodles::fasta::Reader::new(std::io::BufReader::new(io::get_reader(input)?));
         let mut records_iterator = reader.records();
 
         let mut records: Vec<noodles::fasta::Record> =
-            Vec::with_capacity(main_params.buffer_length.unwrap_or(8192));
+            Vec::with_capacity(main_params.buffer_length());
 
         let mut end = false;
         while !end {
-            for i in 0..main_params.buffer_length.unwrap_or(8192) {
+            for i in 0..main_params.buffer_length() {
                 if let Some(Ok(record)) = records_iterator.next() {
                     records.push(record);
                 } else {
