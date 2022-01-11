@@ -5,6 +5,7 @@
 /* crate use */
 
 /* project use */
+use crate::*;
 
 #[derive(clap::Parser, std::fmt::Debug)]
 #[clap(version = "0.1", author = "Pierre Marijon")]
@@ -66,9 +67,60 @@ pub enum SubCommand {
     Clean(SubCommandClean),
 }
 
+#[derive(std::fmt::Debug, std::clone::Clone, std::marker::Copy)]
+pub enum OutputFormat {
+    Text,
+    Json,
+}
+
+impl std::str::FromStr for OutputFormat {
+    type Err = error::Cli;
+
+    fn from_str(params: &str) -> Result<Self, Self::Err> {
+        match params {
+            "text" => Ok(OutputFormat::Text),
+            "json" => Ok(OutputFormat::Json),
+            _ => Err(error::Cli::OutputFormatCast {
+                params: params.to_string(),
+            }),
+        }
+    }
+}
+
 #[derive(clap::Parser, std::fmt::Debug)]
 /// Detect low coverage region
-pub struct SubCommandDetect {}
+pub struct SubCommandDetect {
+    #[clap(short = 'f', long = "format")]
+    /// Output format (default: text)
+    pub format: Option<OutputFormat>,
+
+    #[clap(short = 'o', long = "output")]
+    /// Output path (default: stdout)
+    pub output: Option<std::path::PathBuf>,
+}
+
+impl SubCommandDetect {
+    /// Get output or default value
+    pub fn output(&self) -> error::Result<Box<dyn std::io::Write>> {
+        self.output
+            .as_ref()
+            .map(|path| io::get_writer(path))
+            .unwrap_or_else(|| Ok(Box::new(std::io::stdout())))
+    }
+
+    /// Get output or default value as String
+    pub fn output_as_string(&self) -> String {
+        match &self.output {
+            Some(path) => path.to_path_buf().into_os_string().into_string().unwrap(),
+            None => "stdout".to_string(),
+        }
+    }
+
+    /// Get format or default value
+    pub fn format(&self) -> OutputFormat {
+        self.format.unwrap_or(OutputFormat::Text)
+    }
+}
 
 #[derive(clap::Parser, std::fmt::Debug)]
 /// Filter read with low coverage region

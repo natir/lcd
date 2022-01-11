@@ -1,11 +1,13 @@
 //! Run detection of low coverage region
 
 /* std use */
+use std::io::Write as _;
 
 /* crate use */
 use rayon::prelude::*;
 
 /* project use */
+use crate::error::*;
 use crate::*;
 
 /// Run detection with parameter from cli
@@ -25,9 +27,20 @@ pub fn main(
         main_params.buffer_length(),
     )?;
 
-    for (name, gap) in read2gap.0 {
-        println!("{}: {:?}", name, gap);
-    }
+    writeln!(
+        std::io::BufWriter::new(sub_params.output()?),
+        "{}",
+        match sub_params.format {
+            Some(cli::OutputFormat::Text) | None => read2gap.text()?,
+            Some(cli::OutputFormat::Json) => read2gap.json()?,
+        }
+    )
+    .map_err(|error| {
+        Error::IO(IO::WriteError {
+            path: sub_params.output_as_string(),
+            error,
+        })
+    })?;
 
     Ok(())
 }

@@ -12,18 +12,30 @@ pub enum Error {
     #[error(transparent)]
     IO(#[from] IO),
 
+    /// Error associate to Command Line Interface [Cli]
+    #[error(transparent)]
+    Cli(#[from] Cli),
+
     #[error(transparent)]
     Transparent(#[from] Box<dyn std::error::Error>),
 }
 
 #[derive(thiserror::Error, std::fmt::Debug)]
+pub enum Cli {
+    /// Can't convert str in OutputFormat
+    #[error("Can't convert \"{params}\" in OutputFormat allow value are 'text', 'json'")]
+    OutputFormatCast { params: String },
+}
+
+#[derive(thiserror::Error, std::fmt::Debug)]
 pub enum IO {
-    /// I can't open file.
-    #[error("I can't open file {path:?}, error: {error}")]
-    CantOpenFile {
-        path: std::path::PathBuf,
-        error: std::io::Error,
-    },
+    /// Can't open file.
+    #[error("Can't open file {path}, error: {error}")]
+    CantOpenFile { path: String, error: std::io::Error },
+
+    /// Write error
+    #[error("Error durring write in file {path}, error: {error}")]
+    WriteError { path: String, error: std::io::Error },
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
