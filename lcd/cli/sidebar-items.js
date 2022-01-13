@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["OutputFormat",""],["SubCommand",""]],"fn":[["i82level","Convert verbosity count to log Level"]],"struct":[["Command","Low Coverage Detection"],["SubCommandClean","Remove low coverage region"],["SubCommandDetect","Detect low coverage region"],["SubCommandFilter","Filter read with low coverage region"]]});

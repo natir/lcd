@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["lcd"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.57.0/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> for <a class=\"struct\" href=\"lcd/read2gap/struct.Read2Gap.html\" title=\"struct lcd::read2gap::Read2Gap\">Read2Gap</a>","synthetic":false,"types":["lcd::read2gap::Read2Gap"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

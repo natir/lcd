@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["detect","Run detection on input files with parameter"],["main","Run detection with parameter from cli"]]});

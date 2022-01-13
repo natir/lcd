@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Read2Gap","Struct to associate a read id his gap"]]});
