@@ -4,6 +4,9 @@
 use std::io::Write as _;
 
 /* crate use */
+use ndarray::parallel::prelude::*;
+use ndarray::prelude::*;
+use ndarray_stats::EntropyExt;
 use rayon::prelude::*;
 
 /* project use */
@@ -89,22 +92,24 @@ pub fn detect(
                                 kmer_size,
                             );
 
-                            let mut begin_gap: Option<usize> = None;
-                            for (i, canonical) in tokenizer.enumerate() {
-                                let coverage = counts.get_canonic(canonical);
+                            let cover: ndarray::Array<f64, ndarray::Ix1> = tokenizer
+                                .map(|cano| counts.get_canonic(cano) as f64)
+                                .collect();
+                            let total_cover = cover.sum();
+                            let reality = cover / total_cover;
+                            let theory = ndarray::Array::from_iter(
+                                std::iter::repeat(
+                                    total_cover / record.sequence().len() as f64 / total_cover,
+                                )
+                                .take(record.sequence().len() - kmer_size as usize + 1),
+                            );
 
-                                if begin_gap.is_none() && coverage < min_coverage {
-                                    begin_gap = Some(i)
-                                }
+                            let divergence = reality.kl_divergence(&theory).unwrap(); //_or(1.0);
 
-                                if coverage > min_coverage {
-                                    if let Some(begin) = begin_gap {
-                                        if i - begin > gap_length as usize {
-                                            gap.push((begin, i));
-                                        }
-                                        begin_gap = None
-                                    }
-                                }
+                            println!("{}\n{}\n{}\n{}", record.name(), theory, reality, divergence);
+
+                            if divergence > 0.5 {
+                                gap.push((0, record.sequence().len()));
                             }
                         }
 

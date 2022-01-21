@@ -14,6 +14,9 @@ crate-type = ["rlib", "cdylib", "staticlib"]
 [dependencies]
 cocktail       = { git = "https://github.com/natir/cocktail.git" }
 pcon	       = { git = "https://github.com/natir/pcon.git" }
+ndarray        = { version = "0.15", features = ["rayon"] }
+ndarray-stats  = "0.5"
+
 
 # other stuff
 rustc-hash     = "1"
