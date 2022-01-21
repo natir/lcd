@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["clean",""]]});
+initSidebarItems({"fn":[["clean",""],["main","Run clean with parameter from cli"]]});

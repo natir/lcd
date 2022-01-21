@@ -117,12 +117,6 @@
 <span id="116">116</span>
 <span id="117">117</span>
 <span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
-<span id="122">122</span>
-<span id="123">123</span>
-<span id="124">124</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Run detection of low coverage region</span>
 
 <span class="comment">/* std use */</span>
@@ -193,15 +187,7 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">end</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="kw">while</span> <span class="op">!</span><span class="ident">end</span> {
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">buffer_length</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">record</span>)) <span class="op">=</span> <span class="ident">records_iterator</span>.<span class="ident">next</span>() {
-                    <span class="ident">records</span>.<span class="ident">push</span>(<span class="ident">record</span>);
-                } <span class="kw">else</span> {
-                    <span class="ident">end</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                    <span class="ident">records</span>.<span class="ident">truncate</span>(<span class="ident">i</span>);
-                    <span class="kw">break</span>;
-                }
-            }
+            <span class="ident">end</span> <span class="op">=</span> <span class="ident">populate_buffer</span>(<span class="kw-2">&amp;mut</span> <span class="ident">records_iterator</span>, <span class="kw-2">&amp;mut</span> <span class="ident">records</span>, <span class="ident">buffer_length</span>);
 
             <span class="macro">log::info!</span>(<span class="string">&quot;Buffer len: {}&quot;</span>, <span class="ident">records</span>.<span class="ident">len</span>());
 
@@ -242,6 +228,8 @@
                     })
                     .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="op">!</span><span class="ident">x</span>.<span class="number">1</span>.<span class="ident">is_empty</span>()),
             );
+
+            <span class="ident">records</span>.<span class="ident">clear</span>()
         }
     }
 
