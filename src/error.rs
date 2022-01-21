@@ -29,6 +29,14 @@ pub enum Cli {
     /// Number of input and output must be equal
     #[error("Number of input ({input}) and output ({output}) must be equal")]
     DiffInputOutput { input: usize, output: usize },
+
+    /// If inputs isn't set in subcommand it must be set in main command
+    #[error("If inputs isn't set in subcommand it must be set in main command")]
+    InputsIsRequiredInMainOrSubCommand,
+
+    /// User must set inputs or counts in main command params
+    #[error("User must set inputs or counts in main command params")]
+    InputsOrCountMustBeSet,
 }
 
 #[derive(thiserror::Error, std::fmt::Debug)]

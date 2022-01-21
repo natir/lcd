@@ -24,10 +24,14 @@ pub struct Command {
     pub kmer_size: u8,
 
     #[clap(short = 'i', long = "inputs")]
-    /// Path to inputs
-    pub inputs: Vec<std::path::PathBuf>,
+    /// Paths to the sequence files where the kmer will be counted
+    pub inputs: Option<Vec<std::path::PathBuf>>,
 
-    #[clap(short = 'c', long = "coverage")]
+    #[clap(short = 'c', long = "counts")]
+    /// A previous pcon count
+    pub counts: Option<std::path::PathBuf>,
+
+    #[clap(short = 't', long = "threshold")]
     /// If estimate coverage is equal or lower than this value are consider as low coverage region (default: 0)
     pub min_coverage: Option<u8>,
 
@@ -97,6 +101,10 @@ pub struct SubCommandDetect {
     #[clap(short = 'o', long = "output")]
     /// Output path (default: stdout)
     pub output: Option<std::path::PathBuf>,
+
+    #[clap(short = 'i', long = "inputs")]
+    /// Paths to the sequence files where chimera should be detect (if not set main command inputs is use)
+    pub inputs: Option<Vec<std::path::PathBuf>>,
 }
 
 impl SubCommandDetect {
@@ -125,6 +133,10 @@ impl SubCommandDetect {
 #[derive(clap::Parser, std::fmt::Debug)]
 /// Filter read with low coverage region
 pub struct SubCommandFilter {
+    #[clap(short = 'i', long = "inputs")]
+    /// Paths to the sequence files where chimera should be filter (if not set main command inputs is use)
+    pub inputs: Option<Vec<std::path::PathBuf>>,
+
     #[clap(short = 'o', long = "output")]
     /// Output path (default: stdout)
     pub outputs: Option<Vec<std::path::PathBuf>>,
@@ -148,7 +160,31 @@ impl SubCommandFilter {
 
 #[derive(clap::Parser, std::fmt::Debug)]
 /// Remove low coverage region
-pub struct SubCommandClean {}
+pub struct SubCommandClean {
+    #[clap(short = 'i', long = "inputs")]
+    /// Paths to the sequence files where chimera should be clean (if not set main command inputs is use)
+    pub inputs: Option<Vec<std::path::PathBuf>>,
+
+    #[clap(short = 'o', long = "output")]
+    /// Output path (default: stdout)
+    pub outputs: Option<Vec<std::path::PathBuf>>,
+}
+
+impl SubCommandClean {
+    /// Get outputs or default value
+    pub fn outputs(&self) -> error::Result<Vec<Box<dyn std::io::Write>>> {
+        if let Some(paths) = &self.outputs {
+            let outs: Result<Vec<_>, _> = paths
+                .iter()
+                .map(|path| io::get_writer(path.as_ref()))
+                .collect();
+
+            outs
+        } else {
+            Ok(vec![Box::new(std::io::stdout())])
+        }
+    }
+}
 
 /// Convert verbosity count to log Level
 pub fn i82level(level: i8) -> Option<log::Level> {

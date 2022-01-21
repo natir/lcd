@@ -13,20 +13,27 @@ use crate::*;
 pub fn main(
     counts: pcon::counter::Counter,
     main_params: &cli::Command,
-    sub_params: &cli::SubCommandFilter,
+    sub_params: &cli::SubCommandClean,
 ) -> error::Result<()> {
     log::debug!("Run clean with params: {:?} {:?}", main_params, sub_params);
 
-    if main_params.inputs.len() != sub_params.outputs()?.len() {
+    let target_reads = match (main_params.inputs.as_ref(), sub_params.inputs.as_ref()) {
+        (Some(_), Some(sub)) => sub,
+        (None, Some(sub)) => sub,
+        (Some(main), None) => main,
+        _ => return Err(error::Error::Cli(Cli::InputsIsRequiredInMainOrSubCommand)),
+    };
+
+    if target_reads.len() != sub_params.outputs()?.len() {
         return Err(Error::Cli(Cli::DiffInputOutput {
-            input: main_params.inputs.len(),
+            input: target_reads.len(),
             output: sub_params.outputs()?.len(),
         }));
     }
 
     let read2gap = detect::detect(
         counts,
-        &main_params.inputs,
+        &target_reads,
         main_params.kmer_size,
         main_params.min_coverage(),
         main_params.gap_length(),
@@ -35,7 +42,7 @@ pub fn main(
 
     clean(
         &read2gap,
-        &main_params.inputs,
+        &target_reads,
         sub_params.outputs()?,
         main_params.buffer_length(),
     )?;

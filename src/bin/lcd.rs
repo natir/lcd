@@ -27,19 +27,19 @@ fn main() -> error::Result<()> {
         set_nb_threads(threads);
     }
 
-    let count = if let Some(buffer_length) = params.buffer_length {
-        io::count_kmer(params.kmer_size, &params.inputs, buffer_length)?
-    } else {
-        io::count_kmer(params.kmer_size, &params.inputs, 8192)?
+    let count = match (&params.inputs, &params.counts) {
+        (Some(paths), _) => io::count_kmer(params.kmer_size, paths, params.buffer_length())?,
+        (_, Some(path)) => {
+            let mut reader = std::io::BufReader::new(io::get_reader(path)?);
+            pcon::counter::Counter::deserialize(&mut reader)
+                .map_err(|error| error::Error::Transparent(error.into()))?
+        }
+        _ => return Err(error::Error::Cli(error::Cli::InputsOrCountMustBeSet)),
     };
 
     match params.subcmd {
         cli::SubCommand::Detect(ref subparams) => detect::main(count, &params, subparams),
         cli::SubCommand::Filter(ref subparams) => filter::main(count, &params, subparams),
-        cli::SubCommand::Clean(subparams) => clean::clean(params),
-        _ => {
-            log::error!("Not supported sub command");
-            Ok(())
-        }
+        cli::SubCommand::Clean(ref subparams) => clean::main(count, &params, subparams),
     }
 }
