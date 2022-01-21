@@ -61,15 +61,7 @@ pub fn filter(
 
         let mut end = false;
         while !end {
-            for i in 0..buffer_length {
-                if let Some(Ok(record)) = records_iterator.next() {
-                    records.push(record);
-                } else {
-                    end = true;
-                    records.truncate(i);
-                    break;
-                }
-            }
+            end = populate_buffer(&mut records_iterator, &mut records, buffer_length);
 
             log::info!("Buffer len: {}", records.len());
 
@@ -86,6 +78,8 @@ pub fn filter(
                     })
                 })?;
             }
+
+            records.clear();
         }
     }
 
