@@ -49,6 +49,17 @@ where
     false
 }
 
-pub fn flatten_vec_tuple(data: &[(i32, i32)]) -> &[i32] {
-    unsafe { std::mem::transmute(std::slice::from_raw_parts(data.as_ptr(), data.len() * 2)) }
+/// Get good set of input reads
+pub fn get_target_reads<'a>(
+    main_inputs: &'a Option<Vec<std::path::PathBuf>>,
+    sub_inputs: &'a Option<Vec<std::path::PathBuf>>,
+) -> error::Result<&'a Vec<std::path::PathBuf>> {
+    match (main_inputs.as_ref(), sub_inputs.as_ref()) {
+        (Some(_), Some(sub)) => Ok(sub),
+        (None, Some(sub)) => Ok(sub),
+        (Some(main), None) => Ok(main),
+        _ => Err(error::Error::Cli(
+            error::Cli::InputsIsRequiredInMainOrSubCommand,
+        )),
+    }
 }

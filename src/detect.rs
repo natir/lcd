@@ -21,12 +21,7 @@ pub fn main(
 ) -> error::Result<()> {
     log::debug!("Run detect with params: {:?} {:?}", main_params, sub_params);
 
-    let target_reads = match (main_params.inputs.as_ref(), sub_params.inputs.as_ref()) {
-        (Some(main), Some(sub)) => sub,
-        (None, Some(sub)) => sub,
-        (Some(main), None) => main,
-        _ => return Err(error::Error::Cli(Cli::InputsIsRequiredInMainOrSubCommand)),
-    };
+    let target_reads = get_target_reads(&main_params.inputs, &sub_params.inputs)?;
 
     let read2gap = detect(
         counts,

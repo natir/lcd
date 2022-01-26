@@ -17,12 +17,7 @@ pub fn main(
 ) -> error::Result<()> {
     log::debug!("Run clean with params: {:?} {:?}", main_params, sub_params);
 
-    let target_reads = match (main_params.inputs.as_ref(), sub_params.inputs.as_ref()) {
-        (Some(_), Some(sub)) => sub,
-        (None, Some(sub)) => sub,
-        (Some(main), None) => main,
-        _ => return Err(error::Error::Cli(Cli::InputsIsRequiredInMainOrSubCommand)),
-    };
+    let target_reads = get_target_reads(&main_params.inputs, &sub_params.inputs)?;
 
     if target_reads.len() != sub_params.outputs()?.len() {
         return Err(Error::Cli(Cli::DiffInputOutput {
