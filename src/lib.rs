@@ -12,6 +12,7 @@ pub mod read2gap;
 
 // subcommand
 pub mod clean;
+pub mod coverage;
 pub mod detect;
 pub mod filter;
 

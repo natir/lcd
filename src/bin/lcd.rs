@@ -38,6 +38,7 @@ fn main() -> error::Result<()> {
     };
 
     match params.subcmd {
+        cli::SubCommand::Coverage(ref subparams) => coverage::main(count, &params, subparams),
         cli::SubCommand::Detect(ref subparams) => detect::main(count, &params, subparams),
         cli::SubCommand::Filter(ref subparams) => filter::main(count, &params, subparams),
         cli::SubCommand::Clean(ref subparams) => clean::main(count, &params, subparams),

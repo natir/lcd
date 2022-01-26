@@ -66,9 +66,40 @@ impl Command {
 
 #[derive(clap::Parser, std::fmt::Debug)]
 pub enum SubCommand {
+    Coverage(SubCommandCoverage),
     Detect(SubCommandDetect),
     Filter(SubCommandFilter),
     Clean(SubCommandClean),
+}
+
+#[derive(clap::Parser, std::fmt::Debug)]
+/// Generate coverage curve of each reads
+pub struct SubCommandCoverage {
+    #[clap(short = 'o', long = "output")]
+    /// Output path (default: stdout)
+    pub output: Option<std::path::PathBuf>,
+
+    #[clap(short = 'i', long = "inputs")]
+    /// Paths to the sequence files where coverage should be detect (if not set main command inputs is use)
+    pub inputs: Option<Vec<std::path::PathBuf>>,
+}
+
+impl SubCommandCoverage {
+    /// Get output or default value
+    pub fn output(&self) -> error::Result<Box<dyn std::io::Write>> {
+        self.output
+            .as_ref()
+            .map(|path| io::get_writer(path))
+            .unwrap_or_else(|| Ok(Box::new(std::io::stdout())))
+    }
+
+    /// Get output or default value as String
+    pub fn output_as_string(&self) -> String {
+        match &self.output {
+            Some(path) => path.to_path_buf().into_os_string().into_string().unwrap(),
+            None => "stdout".to_string(),
+        }
+    }
 }
 
 #[derive(std::fmt::Debug, std::clone::Clone, std::marker::Copy)]
