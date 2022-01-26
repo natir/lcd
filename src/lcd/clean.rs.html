@@ -107,11 +107,6 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Run cleaning of low coverage region inside of read</span>
 
 <span class="comment">/* std use */</span>
@@ -131,12 +126,7 @@
 ) -&gt; <span class="ident">error::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="macro">log::debug!</span>(<span class="string">&quot;Run clean with params: {:?} {:?}&quot;</span>, <span class="ident">main_params</span>, <span class="ident">sub_params</span>);
 
-    <span class="kw">let</span> <span class="ident">target_reads</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">main_params</span>.<span class="ident">inputs</span>.<span class="ident">as_ref</span>(), <span class="ident">sub_params</span>.<span class="ident">inputs</span>.<span class="ident">as_ref</span>()) {
-        (<span class="prelude-val">Some</span>(<span class="kw">_</span>), <span class="prelude-val">Some</span>(<span class="ident">sub</span>)) =&gt; <span class="ident">sub</span>,
-        (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">sub</span>)) =&gt; <span class="ident">sub</span>,
-        (<span class="prelude-val">Some</span>(<span class="ident">main</span>), <span class="prelude-val">None</span>) =&gt; <span class="ident">main</span>,
-        <span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">error::Error::Cli</span>(<span class="ident">Cli::InputsIsRequiredInMainOrSubCommand</span>)),
-    };
+    <span class="kw">let</span> <span class="ident">target_reads</span> <span class="op">=</span> <span class="ident">get_target_reads</span>(<span class="kw-2">&amp;</span><span class="ident">main_params</span>.<span class="ident">inputs</span>, <span class="kw-2">&amp;</span><span class="ident">sub_params</span>.<span class="ident">inputs</span>)<span class="question-mark">?</span>;
 
     <span class="kw">if</span> <span class="ident">target_reads</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">sub_params</span>.<span class="ident">outputs</span>()<span class="question-mark">?</span>.<span class="ident">len</span>() {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Cli</span>(<span class="ident">Cli::DiffInputOutput</span> {

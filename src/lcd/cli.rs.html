@@ -198,6 +198,37 @@
 <span id="197">197</span>
 <span id="198">198</span>
 <span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Command line interface of LCD</span>
 
 <span class="comment">/* std use */</span>
@@ -266,9 +297,40 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">clap::Parser</span>, <span class="ident">std::fmt::Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SubCommand</span> {
+    <span class="ident">Coverage</span>(<span class="ident">SubCommandCoverage</span>),
     <span class="ident">Detect</span>(<span class="ident">SubCommandDetect</span>),
     <span class="ident">Filter</span>(<span class="ident">SubCommandFilter</span>),
     <span class="ident">Clean</span>(<span class="ident">SubCommandClean</span>),
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">clap::Parser</span>, <span class="ident">std::fmt::Debug</span>)]</span>
+<span class="doccomment">/// Generate coverage curve of each reads</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SubCommandCoverage</span> {
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;o&#39;</span>, <span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;output&quot;</span>)]</span>
+    <span class="doccomment">/// Output path (default: stdout)</span>
+    <span class="kw">pub</span> <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span>,
+
+    <span class="attribute">#[<span class="ident">clap</span>(<span class="ident">short</span> <span class="op">=</span> <span class="string">&#39;i&#39;</span>, <span class="ident">long</span> <span class="op">=</span> <span class="string">&quot;inputs&quot;</span>)]</span>
+    <span class="doccomment">/// Paths to the sequence files where coverage should be detect (if not set main command inputs is use)</span>
+    <span class="kw">pub</span> <span class="ident">inputs</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">SubCommandCoverage</span> {
+    <span class="doccomment">/// Get output or default value</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">error::Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::io::Write</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">output</span>
+            .<span class="ident">as_ref</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">path</span><span class="op">|</span> <span class="ident">io::get_writer</span>(<span class="ident">path</span>))
+            .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">Box::new</span>(<span class="ident">std::io::stdout</span>())))
+    }
+
+    <span class="doccomment">/// Get output or default value as String</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">output_as_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">output</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">path</span>) =&gt; <span class="ident">path</span>.<span class="ident">to_path_buf</span>().<span class="ident">into_os_string</span>().<span class="ident">into_string</span>().<span class="ident">unwrap</span>(),
+            <span class="prelude-val">None</span> =&gt; <span class="string">&quot;stdout&quot;</span>.<span class="ident">to_string</span>(),
+        }
+    }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">std::fmt::Debug</span>, <span class="ident">std::clone::Clone</span>, <span class="ident">std::marker::Copy</span>)]</span>

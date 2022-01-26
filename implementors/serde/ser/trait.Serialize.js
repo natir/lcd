@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["lcd"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/serde/1.0.134/serde/ser/trait.Serialize.html\" title=\"trait serde::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"lcd/read2gap/struct.Read2Gap.html\" title=\"struct lcd::read2gap::Read2Gap\">Read2Gap</a>","synthetic":false,"types":["lcd::read2gap::Read2Gap"]}];
+implementors["lcd"] = [{"text":"impl <a class=\"trait\" href=\"https://docs.rs/serde/1.0.136/serde/ser/trait.Serialize.html\" title=\"trait serde::ser::Serialize\">Serialize</a> for <a class=\"struct\" href=\"lcd/read2gap/struct.Read2Gap.html\" title=\"struct lcd::read2gap::Read2Gap\">Read2Gap</a>","synthetic":false,"types":["lcd::read2gap::Read2Gap"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
