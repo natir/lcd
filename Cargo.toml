@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Pierre Marijon <pierre@marijon.fr>"]
 description = "LCD: Low Coverage Detection, use kmer count to detect low coverage part of read"
 edition = "2021"
-
+rust-version = "1.56"
 
 [lib]
 name = "lcd"
@@ -41,13 +41,9 @@ env_logger     = "0.9"
 
 
 [profile.release]
+# debug = true ## Uncomment for profile
 lto = 'thin'
 opt-level = 3
 overflow-checks = false
 panic = 'abort'
 incremental = false
-
-
-[profile.profiling]
-inherits = "release"
-debug = true
