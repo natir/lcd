@@ -3,8 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/natir/lcd/blob/master/LICENSE)
 ![CI](https://github.com/natir/lcd/workflows/CI/badge.svg)
 [![Documentation](https://github.com/natir/lcd/workflows/Documentation/badge.svg)](https://natir.github.io/lcd/lcd)
-[![CodeCov](https://codecov.io/gh/natir/lcd/lcdanch/master/graph/badge.svg)](https://codecov.io/gh/natir/lcd)
-
+[![CodeCov](https://codecov.io/gh/natir/lcd/branch/master/graph/badge.svg)](https://codecov.io/gh/natir/lcd)
 
 ## Instalation
 
