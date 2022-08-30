@@ -31,7 +31,7 @@ pub struct Command {
     /// A previous pcon count
     pub counts: Option<std::path::PathBuf>,
 
-    #[clap(short = 't', long = "threshold")]
+    #[clap(short = 'm', long = "threshold")]
     /// If estimate coverage is equal or lower than this value are consider as low coverage region (default: 0)
     pub min_coverage: Option<u8>,
 

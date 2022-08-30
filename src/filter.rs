@@ -28,7 +28,7 @@ pub fn main(
 
     let read2gap = detect::detect(
         counts,
-        &target_reads,
+        target_reads,
         main_params.kmer_size,
         main_params.min_coverage(),
         main_params.gap_length(),
@@ -37,7 +37,7 @@ pub fn main(
 
     filter(
         &read2gap,
-        &target_reads,
+        target_reads,
         sub_params.outputs()?,
         main_params.buffer_length(),
     )?;

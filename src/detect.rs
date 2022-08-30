@@ -4,9 +4,6 @@
 use std::io::Write as _;
 
 /* crate use */
-use ndarray::parallel::prelude::*;
-use ndarray::prelude::*;
-use ndarray_stats::EntropyExt;
 use rayon::prelude::*;
 
 /* project use */
@@ -25,7 +22,7 @@ pub fn main(
 
     let read2gap = detect(
         counts,
-        &target_reads,
+        target_reads,
         main_params.kmer_size,
         main_params.min_coverage(),
         main_params.gap_length(),
@@ -59,6 +56,78 @@ pub fn detect(
     gap_length: u8,
     buffer_length: usize,
 ) -> error::Result<read2gap::Read2Gap> {
+    let mut histo: Vec<u64> = vec![0; 255];
+
+    for input in inputs {
+        let mut reader =
+            noodles::fasta::Reader::new(std::io::BufReader::new(io::get_reader(input)?));
+        let mut records_iterator = reader.records();
+
+        let mut records: Vec<noodles::fasta::Record> = Vec::with_capacity(buffer_length);
+
+        // Parse all read to found gap and compute coverage change
+        let mut end = false;
+        while !end {
+            end = populate_buffer(&mut records_iterator, &mut records, buffer_length);
+
+            log::info!("Buffer len: {}", records.len());
+
+            let tmp_histo = records
+                .par_iter()
+                .filter(|r| r.sequence().len() > kmer_size as usize)
+                .map(|record| {
+                    let mut record_histo: Vec<u64> = vec![0; 256];
+
+                    let kmers =
+                        cocktail::tokenizer::Canonical::new(record.sequence().as_ref(), kmer_size);
+
+                    let mut prev_count = 0;
+                    let mut gap_start: Option<u8> = None;
+                    for count in kmers.into_iter().map(|x| counts.get_canonic(x)) {
+                        if count < min_coverage {
+                            if gap_start.is_none() {
+                                // Start of gap
+                                gap_start = Some(prev_count);
+                            }
+                        } else if let Some(start) = gap_start {
+                            // End of gap
+                            gap_start = None;
+
+                            record_histo[abs_diff(start, count)] += 1;
+                        }
+
+                        prev_count = count;
+                    }
+
+                    record_histo
+                })
+                .reduce(
+                    || vec![0; 256],
+                    |mut a, b| {
+                        for i in 0..256 {
+                            a[i] += b[i];
+                        }
+                        a
+                    },
+                );
+
+            for i in 0..255 {
+                histo[i] += tmp_histo[i];
+            }
+
+            records.clear()
+        }
+    }
+
+    // Found threshold of gap
+    let mut threshold = 0;
+    for (i, d) in histo.windows(2).enumerate() {
+        if d[1] > d[0] {
+            threshold = i;
+            break;
+        }
+    }
+
     let mut read2gap = read2gap::Read2Gap::default();
 
     for input in inputs {
@@ -68,6 +137,7 @@ pub fn detect(
 
         let mut records: Vec<noodles::fasta::Record> = Vec::with_capacity(buffer_length);
 
+        // Parse all read to found gap and compute coverage change
         let mut end = false;
         while !end {
             end = populate_buffer(&mut records_iterator, &mut records, buffer_length);
@@ -77,44 +147,53 @@ pub fn detect(
             read2gap.0.par_extend(
                 records
                     .par_iter()
+                    .filter(|r| r.sequence().len() > kmer_size as usize)
                     .map(|record| {
                         let mut gap: Vec<(usize, usize)> = Vec::new();
 
-                        if record.sequence().len() >= kmer_size as usize {
-                            let tokenizer = cocktail::tokenizer::Canonical::new(
-                                record.sequence().as_ref(),
-                                kmer_size,
-                            );
+                        let kmers = cocktail::tokenizer::Canonical::new(
+                            record.sequence().as_ref(),
+                            kmer_size,
+                        );
 
-                            let cover: ndarray::Array<f64, ndarray::Ix1> = tokenizer
-                                .map(|cano| counts.get_canonic(cano) as f64)
-                                .collect();
-                            let total_cover = cover.sum();
-                            let reality = cover / total_cover;
-                            let theory = ndarray::Array::from_iter(
-                                std::iter::repeat(
-                                    total_cover / record.sequence().len() as f64 / total_cover,
-                                )
-                                .take(record.sequence().len() - kmer_size as usize + 1),
-                            );
+                        let mut prev_count = 0;
+                        let mut gap_start: Option<(usize, u8)> = None;
+                        for (i, count) in
+                            kmers.into_iter().map(|x| counts.get_canonic(x)).enumerate()
+                        {
+                            if count < min_coverage {
+                                if gap_start.is_none() {
+                                    // Start of gap
+                                    gap_start = Some((i, prev_count));
+                                }
+                            } else if let Some((start_i, start_count)) = gap_start {
+                                // End of gap
+                                gap_start = None;
 
-                            let divergence = reality.kl_divergence(&theory).unwrap(); //_or(1.0);
-
-                            println!("{}\n{}\n{}\n{}", record.name(), theory, reality, divergence);
-
-                            if divergence > 0.5 {
-                                gap.push((0, record.sequence().len()));
+                                if abs_diff(start_count, count) > threshold
+                                    && i - start_i > gap_length as usize
+                                {
+                                    gap.push((start_i, i));
+                                }
                             }
+
+                            prev_count = count;
                         }
 
                         (record.name().to_string(), gap)
                     })
                     .filter(|x| !x.1.is_empty()),
             );
-
-            records.clear()
         }
     }
 
     Ok(read2gap)
+}
+
+fn abs_diff(a: u8, b: u8) -> usize {
+    if a > b {
+        (a - b) as usize
+    } else {
+        (b - a) as usize
+    }
 }
