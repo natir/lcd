@@ -1,43 +1,27 @@
-# LCD: Low Coverage Detection 🧬 💻
+<h1 style="text-align: center;">LCD</h1>
 
-[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/natir/lcd/blob/master/LICENSE)
-![CI](https://github.com/natir/lcd/workflows/CI/badge.svg)
-[![Documentation](https://github.com/natir/lcd/workflows/Documentation/badge.svg)](https://natir.github.io/lcd/lcd)
+![Test](https://github.com/natir/lcd/workflows/Test/badge.svg)
+![Lints](https://github.com/natir/lcd/workflows/Lints/badge.svg)
+![MSRV](https://github.com/natir/lcd/workflows/MSRV/badge.svg)
 [![CodeCov](https://codecov.io/gh/natir/lcd/branch/master/graph/badge.svg)](https://codecov.io/gh/natir/lcd)
-
-## Instalation
-
-If you haven't a rust environment you can use [rustup](https://rustup.rs/) or your package manager.
+[![Documentation](https://github.com/natir/lcd/workflows/Documentation/badge.svg)](https://natir.github.io/lcd/lcd)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/natir/lcd/blob/master/LICENSE)
 
 
-### With cargo
+LCD: Low Coverage Detection, use kmer count to detect low coverage part of read
 
-Recommended solution.
+## Installation
 
-```
-cargo install --git https://github.com/natir/lcd.git
-```
+### From source
 
-
-### With source
-
-```
+```bash
 git clone https://github.com/natir/lcd.git
 cd lcd
 cargo install --path .
 ```
 
-
 ## Usage
-
-WIP
-
 
 ## Minimum supported Rust version
 
-Currently the minimum supported Rust version is 1.56.0.
-
-
-## Citation
-
-WIP
+Currently the minimum supported Rust version is 1.65.

@@ -1,53 +1,16 @@
-//! LCD error enum's
-
-/* std use */
+//! Error struct of project LCD
 
 /* crate use */
+use anyhow;
+use thiserror;
 
-/* project use */
-
-#[derive(thiserror::Error, std::fmt::Debug)]
+/// Enum to manage error
+#[derive(std::fmt::Debug, thiserror::Error)]
 pub enum Error {
-    /// Input Output error [IO]
+    /// Error in logging system configuration
     #[error(transparent)]
-    IO(#[from] IO),
+    Log(#[from] log::SetLoggerError),
+    }
 
-    /// Error associate to Command Line Interface [Cli]
-    #[error(transparent)]
-    Cli(#[from] Cli),
-
-    #[error(transparent)]
-    Transparent(#[from] Box<dyn std::error::Error>),
-}
-
-#[derive(thiserror::Error, std::fmt::Debug)]
-pub enum Cli {
-    /// Can't convert str in OutputFormat
-    #[error("Can't convert \"{params}\" in OutputFormat allow value are 'text', 'json'")]
-    OutputFormatCast { params: String },
-
-    /// Number of input and output must be equal
-    #[error("Number of input ({input}) and output ({output}) must be equal")]
-    DiffInputOutput { input: usize, output: usize },
-
-    /// If inputs isn't set in subcommand it must be set in main command
-    #[error("If inputs isn't set in subcommand it must be set in main command")]
-    InputsIsRequiredInMainOrSubCommand,
-
-    /// User must set inputs or counts in main command params
-    #[error("User must set inputs or counts in main command params")]
-    InputsOrCountMustBeSet,
-}
-
-#[derive(thiserror::Error, std::fmt::Debug)]
-pub enum IO {
-    /// Can't open file.
-    #[error("Can't open file {path}, error: {error}")]
-    CantOpenFile { path: String, error: std::io::Error },
-
-    /// Write error
-    #[error("Error durring write in file {path}, error: {error}")]
-    WriteError { path: String, error: std::io::Error },
-}
-
-pub type Result<T> = std::result::Result<T, Error>;
+/// Alias of result
+pub type Result<T> = anyhow::Result<T>;
