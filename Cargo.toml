@@ -17,6 +17,8 @@ license-file = "LICENSE"
 [dependencies]
 cocktail       = { git = "https://github.com/natir/cocktail.git" }
 pcon	       = { git = "https://github.com/natir/pcon.git" }
+rustc-hash     = { version = "1" }
+itertools      = { version = "0.10" }
 
 # multi-threading management
 rayon           = { version = "1", optional = true }

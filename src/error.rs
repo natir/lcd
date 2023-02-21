@@ -20,6 +20,11 @@ pub enum Error {
     #[error(transparent)]
     IO(#[from] std::io::Error),
 
+    /// Error in serde json serialization
+    #[cfg(feature = "json")]
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
+
     /// Error if cli parameter isn't set propely
     #[error("You must provide a count path '-p' or a kmer length '-k'")]
     NoCountNoKmer,
