@@ -1,34 +1,49 @@
 [package]
-name = "LCD"
+name = "lcd"
 version = "0.1.0"
 authors = ["Pierre Marijon <pierre@marijon.fr>"]
 edition = "2021"
 description = "LCD: Low Coverage Detection, use kmer count to detect low coverage part of read"
 rust-version = "1.65"
 
-homepage = "https://github.com/natir/LCD"
-repository = "https://github.com/natir/LCD"
-documentation = "https://natir.github.io/LCD/LCD"
+homepage = "https://github.com/natir/lcd"
+repository = "https://github.com/natir/lcd"
+documentation = "https://natir.github.io/lcd/lcd"
 
 readme = "Readme.md"
 license-file = "LICENSE"
 
 
 [dependencies]
+cocktail       = { git = "https://github.com/natir/cocktail.git" }
+pcon	       = { git = "https://github.com/natir/pcon.git" }
+
+# multi-threading management
+rayon           = { version = "1", optional = true }
+
 # CLI management
 clap           = { version = "4", features = ["derive"] }
-
 
 # Error management
 thiserror      = { version = "1" }
 anyhow         = { version = "1"}
 
-
 # Logging and error management
 log            = { version = "0.4" }
 stderrlog      = { version = "0.5" }
-[dev-dependencies]
-criterion      = { version = "0.4" }
+
+# IO management
+niffler        = { version = "2" }
+noodles        = { version = "0.31", features = ["fasta"] }
+serde          = { version = "1", optional = true }
+serde_json     = { version = "1", optional = true }
+
+
+[features]
+default  = []
+parallel = ["pcon/parallel", "dep:rayon"]
+json     = ["dep:serde", "dep:serde_json"]
+
 
 [profile.release]
 lto = 'thin'

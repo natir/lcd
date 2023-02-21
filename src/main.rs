@@ -10,8 +10,7 @@ use anyhow::Context as _;
 use clap::Parser as _;
 
 /* project use */
-use LCD::cli;
-use LCD::error;
+use lcd::*;
 
 fn main() -> error::Result<()> {
     // parse cli
@@ -24,9 +23,16 @@ fn main() -> error::Result<()> {
         .verbosity(params.verbosity())
         .timestamp(params.timestamp())
         .init()
-	.context("stderrlog already create a logger")?;
+        .context("stderrlog already create a logger")?;
 
-    log::error!("Hello, word!");
+    #[cfg(feature = "parallel")]
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(params.threads())
+        .build_global()?;
+
+    let count = params.count()?;
+
+    log::debug!("{:?}", count);
 
     Ok(())
 }
