@@ -1,4 +1,4 @@
-//! A struct to associate a read id to his gap
+//! Define some usefull type
 
 /* std use */
 
@@ -9,6 +9,18 @@ use serde_json;
 
 /* project use */
 use crate::error;
+
+/// Type alias for coverage
+pub struct Coverage(pub Vec<pcon::CountTypeNoAtomic>);
+
+impl std::fmt::Display for Coverage {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.iter().map(|x| x.to_string()).join(","))
+    }
+}
+
+/// Struct that associate reads id and coverage
+pub struct Read2Coverage(Vec<(String, Coverage)>);
 
 /// Struct to associate a read id his gap
 #[derive(std::default::Default, std::fmt::Debug)]

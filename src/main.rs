@@ -32,7 +32,7 @@ fn main() -> error::Result<()> {
 
     let count = params.count()?;
 
-    log::debug!("{:?}", count);
-
-    Ok(())
+    match params.subcommand {
+        cli::SubCommand::Coverage(ref sub_cmd) => sub_cmd.main(&count, &params),
+    }
 }

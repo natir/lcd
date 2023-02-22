@@ -8,6 +8,12 @@ use std::io::Read as _;
 /* project use */
 use crate::error;
 
+/* mod declaration */
+pub mod coverage;
+
+/* pub use */
+pub use coverage::Coverage;
+
 /// LCD: Low Coverage Detection, use kmer count to detect low coverage part of read
 #[derive(clap::Parser, std::fmt::Debug)]
 #[clap(
@@ -18,7 +24,7 @@ use crate::error;
 pub struct Command {
     /* Generic argument */
     #[cfg(feature = "parallel")]
-    /// Number of theard use 0 use all avaible core, default value 0
+    /// Number of thread use 0 use all avaible core, default value 0
     #[clap(short = 't', long = "threads")]
     threads: Option<usize>,
 
@@ -131,38 +137,7 @@ impl Command {
 #[derive(clap::Subcommand, std::fmt::Debug)]
 pub enum SubCommand {
     /// Detect coverage gap
-    CoverageGap(CoverageGap),
-}
-
-/// SubCommand CoverageGap
-#[derive(clap::Args, std::fmt::Debug)]
-pub struct CoverageGap {
-    /// Path to output, default write in stdout
-    #[clap(short = 'o', long = "output")]
-    output: Option<std::path::PathBuf>,
-
-    #[cfg(feature = "parallel")]
-    /// Path to output write in json
-    #[clap(short = 'j', long = "json")]
-    json: Option<std::path::PathBuf>,
-}
-
-impl CoverageGap {
-    /// Get output
-    pub fn output(&self) -> error::Result<Box<dyn std::io::Write + std::marker::Send>> {
-        match &self.output {
-            None => Ok(Box::new(std::io::BufWriter::new(std::io::stdout()))),
-            Some(path) => create(path),
-        }
-    }
-
-    /// Get json output
-    pub fn json(&self) -> error::Result<Option<Box<dyn std::io::Write + std::marker::Send>>> {
-        match &self.output {
-            None => Ok(None),
-            Some(path) => create(path).map(Some),
-        }
-    }
+    Coverage(Coverage),
 }
 
 fn create<P>(path: P) -> error::Result<Box<dyn std::io::Write + std::marker::Send>>
